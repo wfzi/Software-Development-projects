@@ -19,7 +19,13 @@ def extractName(content):
 
 def getCandidateEmailnName(mgs):
     if msg.is_multipart():
-        content = ''.join(part.get_payload(decode=True).decode() for part in msg.get_payload())
+        content = ""
+        for part in msg.get_payload():
+            try:
+                nn = part.get_payload(decode=True).decode()
+                content += nn
+            except:
+                pass
     else:
         content = msg.get_payload(decode=True).decode()
     for i in range(len(content)-10):
@@ -27,7 +33,7 @@ def getCandidateEmailnName(mgs):
             candidate_name = extractName(content[i+6: i+30])
 
         if(content[i:i+5] == "Email"):
-            candidate_email = extractEmail(content[i+6:i+30])
+            candidate_email = extractEmail(content[i+6:i+100])
             break
 
     return (candidate_name, candidate_email)
@@ -76,7 +82,7 @@ for num in data[0].split():
 
 
     # parallel reply email
-    reply_body = 'Hi {0}, Thank you for your interest in this volunteer opportunity! We are glad to connect with you and get to know you better! Please make an appointment with us using the following link: {1}'.format(candidate_name, config.CALENDLY_LINK)
+    reply_body = 'Hi {0}, Thank you for your interest in this volunteer opportunity! Please schedule an online meeting with us to talk about the details and next steps by clicking the following link: {1}'.format(candidate_name, config.CALENDLY_LINK)
     reply_info = "OPPORTUNITY INFORMATION: Title: {0} Organization: Zenativity, Inc.".format(msg_subject)
 
     # create http email content
