@@ -6,7 +6,7 @@ https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard
 from __future__ import print_function
 
 import os.path
-
+# libraries for google API
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -15,6 +15,14 @@ from googleapiclient.errors import HttpError
 
 import datetime
 import dateutil.relativedelta as dateDelta
+
+#libraries for sending email
+import imaplib
+import smtplib
+from email.mime.text import MIMEText
+
+import email_data
+
 
 weekDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 dateFormat = '%m-%d-%y'
@@ -267,3 +275,37 @@ def verify_weekly_report(volunteerInfo: 'list[str]', spreadsheet_id: 'str', cred
     
     except HttpError as err:
         print(err)
+        
+def send_email(to_email):
+    """
+    send email to the email address assigned from email specified in email_data
+
+    Parameters
+    ----------
+    to_email : str
+        the email address you want to send email to
+    """
+    # SMTP settings
+    smtp_server = 'smtp.gmail.com'
+    smtp_port = 587
+    smtp_username = email_data.USER
+    smtp_password = email_data.PASSWORD
+
+    # IMAP settings
+    mail = imaplib.IMAP4_SSL('imap.gmail.com')
+    mail.login(smtp_username, smtp_password)
+    mail.select('inbox')
+
+    reply_body = 'Reminder'
+    reply_msg = MIMEText(reply_body)
+    reply_msg['From'] = smtp_username
+    reply_msg['To'] = to_email
+    reply_msg['Subject'] = "function test"
+
+    with smtplib.SMTP(smtp_server, smtp_port) as server:
+        server.starttls()
+        server.login(smtp_username, smtp_password)
+        server.sendmail(smtp_username, to_email, reply_msg.as_string())
+        
+    mail.close()
+    mail.logout()
