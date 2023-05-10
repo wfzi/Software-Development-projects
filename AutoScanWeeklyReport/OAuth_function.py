@@ -276,14 +276,18 @@ def verify_weekly_report(volunteerInfo: 'list[str]', spreadsheet_id: 'str', cred
     except HttpError as err:
         print(err)
         
-def send_email(to_email):
+def send_email(to_email: 'str', to_name: 'str', duplicate: 'bool'):
     """
     send email to the email address assigned from email specified in email_data
 
     Parameters
     ----------
     to_email : str
-        the email address you want to send email to
+        The email address you want to send email to
+    to_name : str
+        The name of the person you want to send email to
+    duplicate: bool
+        Whether the email is a reminder of duplicate content
     """
     # SMTP settings
     smtp_server = 'smtp.gmail.com'
@@ -295,12 +299,18 @@ def send_email(to_email):
     mail = imaplib.IMAP4_SSL('imap.gmail.com')
     mail.login(smtp_username, smtp_password)
     mail.select('inbox')
-
-    reply_body = 'Reminder'
+    if duplicate:
+        reply_body = ("Hi " + to_name + ",\n\n" + 
+                            "Our weekly scanning system identifies that you have duplicate check-in contents in your weekly report, please DO NOT copy any weekly work content, please input new contents that summarizes your work.\n\n" +
+                            "Zenativity Admin Team")
+    else:
+        reply_body = ("Hi " + to_name + ",\n\n" + 
+                            "Our weekly scanning system identifies that you did not check in your weekly report in time, please check in asap. If you miss the check in for an accumulative of 3 times and no further action is taken, we will have to terminate your volunteer term with us IMMEDIATELY, as it does not meet with USCIS requirements for OPT student to have consistent record keeping of your work.\n\n" +
+                            "Zenativity Admin Team")
     reply_msg = MIMEText(reply_body)
     reply_msg['From'] = smtp_username
     reply_msg['To'] = to_email
-    reply_msg['Subject'] = "function test"
+    reply_msg['Subject'] = 'Reminder for your Weekly Report'
 
     with smtplib.SMTP(smtp_server, smtp_port) as server:
         server.starttls()
