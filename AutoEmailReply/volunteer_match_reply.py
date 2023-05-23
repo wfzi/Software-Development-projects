@@ -60,7 +60,7 @@ def reply():
     mail.select('inbox')
 
     # Search for emails with the desired subject line
-    since_date = (datetime.now() - timedelta(days=1)).strftime('%d-%b-%Y')
+    since_date = (datetime.now() - timedelta(days=2)).strftime('%d-%b-%Y')
     subject1 = 'Someone wants to help: Volunteer with us and maintain your OPT status!'
     subject2 = 'Someone wants to help: Laid off? Losing OPT status? Volunteer with us and maintain your OPT status!'
     typ, data = mail.search(None, '(UNSEEN OR SUBJECT "{0}" SUBJECT "{1}" SINCE {2})'.format(subject1, subject2, since_date))
