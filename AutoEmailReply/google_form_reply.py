@@ -126,7 +126,7 @@ def reply():
     mail.select('inbox')
 
     # Search for emails with the desired subject line
-    since_date = (datetime.now() - timedelta(days=1)).strftime('%d-%b-%Y')
+    since_date = (datetime.now() - timedelta(days=2)).strftime('%d-%b-%Y')
     subject1 = 'Your form, Zenativity Volunteer Application Form, has new responses.'
     typ, data = mail.search(None, '(UNSEEN SUBJECT "{0}" SINCE {1})'.format(subject1, since_date))
     print(data)
